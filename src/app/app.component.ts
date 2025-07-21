@@ -1,12 +1,11 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-
+import { WebcamComponent } from './web-cam/web-cam.component';
 @Component({
+  imports: [WebcamComponent],
   selector: 'app-root',
-  imports: [RouterOutlet],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  template: `<app-webcam></app-webcam>`,
+  styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
-  title = 'multiFaceDetection';
+  // you can leave this empty or use `title` if you like
 }
