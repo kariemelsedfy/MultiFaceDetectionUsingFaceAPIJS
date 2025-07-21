@@ -1,59 +1,134 @@
 # MultiFaceDetection
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.15.
+An Angular application that:
 
-## Development server
+* **Opens your webcam**
+* **Detects faces in real time** with [face-api.js](https://github.com/justadudewhohacks/face-api.js)
+* **Matches each live face** against a set of labeled images (in `src/assets/labeled_images/`) by computing face descriptors and comparing Euclidean distance
+* **Overlays bounding boxes and names** on the video feed
 
-To start a local development server, run:
+## Prerequisites
+
+* **Node.js** (v16 or later)
+* **npm** (v8 or later)
+* **Angular CLI** v19.2.15+
+  Install globally if you haven’t already:
+
+  ```bash
+  npm install -g @angular/cli@19
+  ```
+
+## Project Structure
+
+```
+multiFaceDetection/           # project root
+├── scripts/
+│   └── generate-manifest.js # generates manifest.json from image files
+├── src/
+│   ├── assets/
+│   │   ├── labeled_images/  # drop your face images here
+│   │   │   ├── Alice.jpg
+│   │   │   ├── Bob.jpeg
+│   │   │   └── manifest.json (auto-generated)
+│   │   ├── models/          # face-api.js model weights
+│   │   └── mask.png         # overlay mask (optional)
+│   ├── app/                 # Angular components & services
+│   ├── index.html
+│   └── main.ts
+├── angular.json             # Angular CLI config
+├── package.json             # npm configuration & scripts
+└── README.md                # this file
+```
+
+## Setup
+
+1. **Clone the repository**
+
+   ```bash
+   git clone <your-repo-url>
+   cd multiFaceDetection
+   ```
+
+2. **Install dependencies**
+
+   ```bash
+   npm install
+   ```
+
+3. **Add your labeled images**
+
+   * Place **exactly one** photo per person inside `src/assets/labeled_images/`.
+   * Name each file **exactly** as the person’s label, with extension `.jpg` or `.jpeg` (e.g. `Alice.jpg`, `Bob.jpeg`).
+
+4. **Generate `manifest.json`**
+   This file tells the app which labels to load. Run:
+
+   ```bash
+   npm run faces:manifest
+   ```
+
+   or directly:
+
+   ```bash
+   node scripts/generate-manifest.js
+   ```
+
+   You should see:
+
+   ```text
+   ✅ Generated manifest.json at src/assets/labeled_images/manifest.json with X labels.
+   ```
+
+5. **Verify assets**
+   Confirm your folder now contains:
+
+   ```text
+   src/assets/labeled_images/
+     ├─ Alice.jpg
+     ├─ Bob.jpeg
+     └─ manifest.json
+   ```
+
+## Development Server
+
+To start the app locally with live reloading:
 
 ```bash
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Open your browser at [http://localhost:4200](http://localhost:4200).
+**Allow camera access** when prompted.
 
-## Code scaffolding
+## Usage
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+* The app will load your labeled images’ descriptors on startup.
+* It then captures your webcam feed, detects faces, computes their descriptors, and finds the **closest match** among your labeled images.
+* Each detected face is boxed in red, with the matched name (and distance) displayed above.
 
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
+## Building for Production
 
 ```bash
-ng build
+npm run build
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+This runs the manifest script first, then builds the optimized production bundle into `dist/`.
 
-## Running unit tests
+## Testing
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+* **Unit tests**:  `ng test`
+* **End-to-end tests**:  `ng e2e`
 
-```bash
-ng test
-```
+## Troubleshooting
 
-## Running end-to-end tests
+* **Camera not opening**: Ensure your browser has camera permissions and you’re using `https://` or `localhost`.
+* **Faces not recognized**:
 
-For end-to-end (e2e) testing, run:
+  * Verify your sample images are clear headshots in similar lighting/angle to your webcam.
+  * Check `manifest.json` lists the correct labels.
+  * Adjust matching threshold in `web-cam.component.ts` (`FaceMatcher` constructor).
 
-```bash
-ng e2e
-```
+## References
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+* face-api.js README: [https://github.com/justadudewhohacks/face-api.js](https://github.com/justadudewhohacks/face-api.js)
+* Angular CLI Documentation: [https://angular.io/cli](https://angular.io/cli)
